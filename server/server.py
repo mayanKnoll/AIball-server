@@ -103,7 +103,7 @@ def server():
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     api = ModelApi()
     try:
-        serverSocket.bind(('localhost', 900))
+        serverSocket.bind(('localhost', 3000))
         print("start Serv!")
         next_games = list()
         done = "First"
