@@ -80,7 +80,7 @@ class ModelApi:
         """
 
     def get_teams_by_year(self, year: int):
-        self._teams_df = pd.read_csv("tables/initial_files/teams_results.csv")
+        self._teams_df = pd.read_csv("teams_results.csv")
         self._teams_df.insert(
             0, 'year',  self._teams_df["index"].map(lambda b: b[:4]))
         self._teams_df.rename(columns={'index': 'group'}, inplace=True)
