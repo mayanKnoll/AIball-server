@@ -1,6 +1,5 @@
 from model_api import ModelApi
 import data_base_connection
-import sys
 from typing import List
 import socket
 import threading
@@ -10,7 +9,6 @@ from datetime import timedelta
 import copy
 from anylze_and_cleaning import date_to_number
 import data_base_connection
-sys.path.append('../AIball/Scrapper')
 # sys.path.insert(
 #     0, r'..\AIball\Scrapper')
 import scrapper
