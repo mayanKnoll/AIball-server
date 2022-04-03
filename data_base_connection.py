@@ -5,7 +5,6 @@ import pandas as pd
 import sys
 from datetime import date
 from anylze_and_cleaning import time_from_start
-sys.path.append('../AIball/Scrapper')
 # sys.path.insert(
 #     0, r'..\AIball\Scrapper')
 import scrapper
