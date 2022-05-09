@@ -9,11 +9,9 @@ from datetime import timedelta
 import copy
 from anylze_and_cleaning import date_to_number
 import data_base_connection
-# sys.path.insert(
-#     0, r'..\AIball\Scrapper')
 import scrapper
 
-
+PORT = 3000
 MONTHS = [date(2021, 9, 30), date(2021, 10, 31), date(2021, 11, 30), date(2021, 12, 31), date(2022, 1, 31),
           date(2022, 2, 28), date(2022, 3, 31), date(2022, 4, 30), date(2022, 5, 31), date(2022, 6, 30)]
 
@@ -97,11 +95,11 @@ def check_acc():
     
 
 
-def server():
+def server(address, port):
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     api = ModelApi()
     try:
-        serverSocket.bind(('localhost', 3000))
+        serverSocket.bind((address, port))
         print("start Serv!")
         next_games = list()
         done = "First"
@@ -154,11 +152,12 @@ def server():
     serverSocket.close()
 
 
-print('Access http://localhost:900')
+print('Access http://localhost:3000')
 
 
 def main():
-    server()
+    import os
+    server('0.0.0.0',port=int(os.environ.get("PORT", 3000)))
 
 
 if __name__ == "__main__":
