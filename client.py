@@ -1,15 +1,17 @@
 from distutils.log import debug
 from flask import Flask, render_template, url_for, request, redirect
 import socket
-
-
+import server
+import threading
+server_th = threading.Thread(target=server.main,args=() )
+server_th.start()
 app = Flask(__name__)
 PORT = 3000
 
 @app.route('/', methods=['POST', 'GET'])
 def home_page():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.settimeout(3)
+    # s.settimeout()
     if request.method == 'POST':
         try:
             team_name = request.form['content']
