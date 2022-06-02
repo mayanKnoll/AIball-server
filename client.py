@@ -1,5 +1,4 @@
 from distutils.log import debug
-from tkinter import OFF
 from flask import Flask, render_template, url_for, request, redirect
 import socket
 
