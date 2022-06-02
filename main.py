@@ -1,3 +1,5 @@
+from distutils.log import debug
+from tkinter import OFF
 from flask import Flask, render_template, url_for, request, redirect
 import socket
 
@@ -29,4 +31,4 @@ def home_page():
 # connecting to the server
     return render_template('index.html', text=teams)
 
-app.run()
+app.run(debug=False,host='0.0.0.0')
