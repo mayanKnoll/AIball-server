@@ -11,7 +11,7 @@ PORT = 3000
 @app.route('/', methods=['POST', 'GET'])
 def home_page():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # s.settimeout()
+    s.settimeout(10)
     if request.method == 'POST':
         try:
             team_name = request.form['content']
