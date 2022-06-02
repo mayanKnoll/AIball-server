@@ -35,12 +35,13 @@ class ModelApi:
         """
 
     def get_game_score(self, game: Dict[str, object]) -> int:
+        del game["_id"]
         date_to_season_and_days(game)
         db.add_balance(True, game)
         db.add_balance(False, game)
+        db.add_last_game(game)
         self.add_team_data(True, game)
         self.add_team_data(False, game)
-        db.add_last_game(game)
         del game["Season"]
         del game['Hm_G']
         # del game['Vis_G']
@@ -61,15 +62,14 @@ class ModelApi:
                     'Last_same_game', 'Vis_Last_game', 'Hm_Last_game', 'Vis_Average_Points',
                     'Hm_Average_Points', 'Vis_Difference', 'Hm_Difference', 'Vis_Losses',
                     'Hm_Losses', 'Vis_Wins', 'Hm_Wins', 'days_from_start']
-        game = {x: y for x, y in sorted(
-            game.items(), key=lambda i: keyorder.index(i[0]))}
+        game = {x: y for x, y in sorted(game.items(), key=lambda i: keyorder.index(i[0]))}
         return self.get_score(pd.DataFrame([game]))
 
 
     def add_team_data(self, home: bool, game: dict):
         team_data = self._teams_df[self._teams_df["group"]
                                    == game[self._place[home]]]
-        team_data.drop("group", axis=1, inplace=True)
+        team_data  = team_data.drop("group", axis=1)
         index = team_data.index[0]
         for fither in team_data.columns:
             game[self._short_place[home] + "_" +

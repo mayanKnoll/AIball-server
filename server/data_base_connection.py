@@ -5,21 +5,20 @@ import pandas as pd
 import sys
 from datetime import date
 from anylze_and_cleaning import time_from_start
+# sys.path.append('../AIball/Scrapper')
 # sys.path.insert(
 #     0, r'..\AIball\Scrapper')
 import scrapper
-
-cluster = MongoClient(
-    "mongodb+srv://Aiball:yuval1andmayan1@cluster0.fadet.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+cluster = MongoClient("mongodb://Aiball:yuval1andmayan1@cluster0-shard-00-00.fadet.mongodb.net:27017,cluster0-shard-00-01.fadet.mongodb.net:27017,cluster0-shard-00-02.fadet.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-11tyfk-shard-0&authSource=admin&retryWrites=true&w=majority")
 db = cluster["AIball"]
 balance = db["balance"]
 played_games = db["played_games"]
 next_games = db["next_games"]
 
+# next_games.delete_many({})
 
-
-def date_to_start(date):
-    return (date - date(date.year - 1, 9,1)).days % 365
+def date_to_start(date_to):
+    return (date_to - date(date_to.year - 1, 9,1)).days % 365
 
 
 def get_teams() -> pd.DataFrame:
@@ -32,6 +31,8 @@ def create_balance():
     teams = [x.split('\xa0')[0]
              for x in scrapper.get_teams_names(today.year).keys()]
     for team in teams:
+        if '*' in team:
+            team = team[:-1]
         if today.month < 9:
             balance.insert_one({"team_name": team, "wins": 0, "losses": 0, "balance": 0, "games": 0,
                                "points": 0, "days_last": (today - date(today.year - 1, 9, 1)).days - 15})
@@ -147,16 +148,16 @@ def update_next_games():
             if len(game) < 6 or game[3]:
                 continue
             game_dict = {
-                "date": time_from_start(game[0]), "home_group": game[4], "visitor_group": game[2]} 
+                "date": game[0], "home_group": game[4], "visitor_group": game[2]} 
             if not last_game_date or last_game_date < game_dict["date"]:
                     next_games.insert_one(game_dict)
 
 
 def get_next_games(team = None) -> List[List[str]]:
     if team:
-        return list(next_games.find({"$or" : [{"home_group": team}, {"visitor_group": team}]}))[:5]
+        return list(next_games.find({"$or" : [{"home_group": {"$regex":team}}, {"visitor_group": {"$regex":team}}]}).limit(5))
     else:
-        return list(next_games.find({}))[:5]
+        return list(next_games.find({}).limit(5))
 
 
 

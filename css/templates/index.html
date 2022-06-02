@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>FlaskBlog</title>
+</head>
+
+<body>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <h1>AIball</h1>
+    <p>enter group name:</p>
+    <div class="form">
+        <form action="/" method="POST">
+            <input type="text" name="content" id="content">
+            <input type="submit" value="send">
+        </form>
+        <div id="text" hidden=true>{{text}}</div>
+        <h2 id="head"></h2>
+        <table id="teams"></table>
+        <script>
+            text = document.getElementById("text").innerText
+            console.log(text)
+            if (text.length == 0 || text[1] != '{') {
+                data = "<p class=\"error\">"
+                if (text.length != 0 && text[0] == '{') {
+                    data += text
+                }
+                else {
+                    data += "this is not a good group name"
+                }
+                data += "</p>"
+                console.log(text)
+                document.getElementById("teams").innerHTML = data
+            }
+            else {            
+                table = document.getElementById("teams")                
+                tr = document.createElement("tr");
+                table.append(tr)
+                th = document.createElement("th");
+                tr.append(th);
+                th.append("date")
+                th = document.createElement("th");
+                tr.append(th);
+                th.append("home group")
+                th = document.createElement("th");
+                tr.append(th);
+                th.append("visitor group")
+                json = JSON.parse(text)
+                flag = true
+                for (var line of json){
+                    head = document.getElementById("head") 
+                    if (flag) {
+                        head.append(line.head);   
+                        flag = false
+                    }
+                    tr = document.createElement("tr");
+                    table.append(tr)
+                    td = document.createElement("td");
+                    tr.append(td);
+                    td.append(line.date);
+                    td = document.createElement("td");
+                    score = parseInt(line.score);
+                    tr.append(td);
+                    td.append(line.home_group);
+                    if (score > 50) td.className = "win"
+                    else td.className = "lose"
+                    td = document.createElement("td");
+                    tr.append(td);
+                    td.append(line.visitor_group);
+                    if (score < 50) td.className = "win"
+                    else td.className = "lose"
+                }
+            }
+        </script>
+</body>
+
+</html>

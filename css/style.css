@@ -1,0 +1,78 @@
+h1 {
+    border: 2px #eee solid;
+    color: brown;
+    text-align: center;
+    padding: 10px;
+}
+
+h2 {
+    color: black;
+    text-align: center;
+    /* padding: 10px; */
+}
+
+p {
+    font-size: large;
+    font-family: 'Poppins', sans-serif;
+    color: black;
+    text-align: center;
+    padding: 5px;
+}
+
+
+.error {
+    font-family: 'Cardo', serif;
+    color: red;
+    text-align: center;
+    padding: 5px;
+}
+
+form {
+    /* border: 1px #eee solid; */
+    color: blue;
+    text-align: center;
+    padding: 5px;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+    color: black;
+    text-align: center;
+    padding: 5px;
+}
+
+td {
+    font-weight: normal;
+    border: 3px #eee solid; 
+    color: black;
+    text-align: center;
+    padding: 5px;
+}
+
+
+.win {
+    font-weight: normal;
+    border: 3px green solid; 
+    color: black;
+    text-align: center;
+    padding: 5px;
+}
+.lose {
+    font-weight: normal;
+    border: 3px red solid; 
+    color: black;
+    text-align: center;
+    padding: 5px;
+}
+
+
+th {
+    font-weight: bold;
+    border: 3px black solid; 
+    color: black;
+    text-align: center;
+    padding: 5px;
+}
+
+
