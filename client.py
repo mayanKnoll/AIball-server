@@ -9,30 +9,28 @@ PORT = 3000
 
 @app.route('/', methods=['POST', 'GET'])
 def home_page():
-    # s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # s.settimeout(3)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(3)
     if request.method == 'POST':
         try:
             team_name = request.form['content']
             if len(team_name) > 0:
-                # s.sendto(("300:"+team_name).encode(), ("127.0.0.1", 3000))
-            # else:
-                pass
-                # s.sendto("200:all groups".encode(), ("127.0.0.1", 3000))
-            # teams = s.recv(1024).decode()
-            teams = "check"
+                s.sendto(("300:"+team_name).encode(), ("127.0.0.1", 3000))
+            else:
+                s.sendto("200:all groups".encode(), ("127.0.0.1", 3000))
+            teams = s.recv(1024).decode()
         except socket.error as e:
             teams=e
     else:
         try:
-            # s.sendto("200:all groups".encode(), ("127.0.0.1", 3000))
-            # teams = s.recv(1024).decode()
-            teams = "mayan"
+            s.sendto("200:all groups".encode(), ("127.0.0.1", 3000))
+            teams = s.recv(1024).decode()
+            # teams = "mayan"
         except socket.error as e:
             teams=e
-    # s.close()   
+    s.close()   
 
 # connecting to the server
     return render_template('index.html', text=teams)
-from waitress import serve
-serve(app, debug=False,host='0.0.0.0')
+
+app.run(debug=False,host='0.0.0.0')
