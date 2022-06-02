@@ -34,5 +34,5 @@ def home_page():
 
 # connecting to the server
     return render_template('index.html', text=teams)
-
-app.run(debug=False,host='0.0.0.0')
+from waitress import serve
+serve(app, debug=False,host='0.0.0.0')
