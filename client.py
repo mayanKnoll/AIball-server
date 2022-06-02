@@ -3,8 +3,8 @@ from flask import Flask, render_template, url_for, request, redirect
 import socket
 import server
 import threading
-server_th = threading.Thread(target=server.main,args=() )
-server_th.start()
+# server_th = threading.Thread(target=server.main,args=() )
+# server_th.start()
 app = Flask(__name__)
 PORT = 3000
 
