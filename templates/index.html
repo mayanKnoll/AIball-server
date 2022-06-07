@@ -1,82 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
     <style>
-        h1 {
-        border: 2px #eee solid;
-        color: brown;
-        text-align: center;
-        padding: 10px;
-    }
-    
-    h2 {
-        color: black;
-        text-align: center;
-        /* padding: 10px; */
-    }
-    
-    p {
-        font-size: large;
-        font-family: 'Poppins', sans-serif;
-        color: black;
-        text-align: center;
-        padding: 5px;
-    }
-    
-    
-    .error {
-        font-family: 'Cardo', serif;
-        color: red;
-        text-align: center;
-        padding: 5px;
-    }
-    
-    form {
-        /* border: 1px #eee solid; */
-        color: blue;
-        text-align: center;
-        padding: 5px;
-    }
-    
-    table {
-        margin-left: auto;
-        margin-right: auto;
-        color: black;
-        text-align: center;
-        padding: 5px;
-    }
-    
-    td {
-        font-weight: normal;
-        border: 3px #eee solid; 
-        color: black;
-        text-align: center;
-        padding: 5px;
-    }
-    
-    
-    .win {
-        font-weight: normal;
-        border: 3px green solid; 
-        color: black;
-        text-align: center;
-        padding: 5px;
-    }
-    .lose {
-        font-weight: normal;
-        border: 3px red solid; 
-        color: black;
-        text-align: center;
-        padding: 5px;
-    }
-    
-    
-    th {
-        font-weight: bold;
-        border: 3px black solid; 
-        color: black;
-        text-align: center;
-        padding: 5px;
-    }
+       h1 {
+            border: 2px #eee solid;
+            color: brown;
+            text-align: center;
+            padding: 10px;
+        }
+
+
+
+
+        p {
+            font-size: large;
+            font-family: 'Poppins', sans-serif;
+            color: black;
+            text-align: center;
+            padding: 5px;
+        }
+
+
+        .parent{
+            text-align: center;
+            float: center;
+        }
+
+        dl{
+            text-align: center;
+            float: center;
+            border: 3px dimgray; 
+        }
+        .float-left-child {
+            float: left;
+        }
+
+        .float-right-child {
+            float: right;
+        }
+
+        .inline-block-child {
+            display: inline-block;
+        }
+
+        .error {
+            font-family: 'Cardo', serif;
+            color: red;
+            text-align: center;
+            padding: 5px;
+        }
+
+        form {
+            /* border: 1px #eee solid; */
+            color: blue;
+            text-align: center;
+            padding: 5px;
+        }
+
+        table {
+            margin-left: auto;
+            margin-right: auto;
+            color: black;
+            text-align: center;
+            padding: 5px;
+        }
+
+        td {
+            font-weight: normal;
+            border: 3px #eee solid; 
+            color: black;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .big {
+            font-weight: bolder;
+            color: black;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .win {
+            border: 3px green solid; 
+        }
+        .lose {
+            border: 3px red solid; 
+        }
+
+        .mid {
+            border: 3px yellow solid; 
+        }
+
+
+        th {
+            font-weight: bold;
+            border: 3px black solid; 
+            color: black;
+            text-align: center;
+            padding: 5px;
+        }
+
+
+        h2 {
+            font-size: medium;
+            font-weight: lighter;
+            color: black;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1px;
+        }
     </style>
 <head>
     <meta charset="UTF-8">
@@ -87,33 +119,64 @@
 
 <body>
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-    <h1>AI-ball</h1>
-    <p>enter group name:</p>
+    <h1>AIball</h1>
+    <h2 class="big" >welcome to AIBall!
+         AIBall is a website that predicts NBA game result</h2>
+    <h2 class="win">the green marked group mean that he had more chance to win this game</h2>
+    <h2 class="lose">the red marked group mean that he had more chance to lose this game</h2>
+    <h2 class="mid">the yellow marked group mean that both teams had the same chance to win this game</h2>
+    <h2>you can choose a team and you will see the present game of that team</h2>
+    <h2>if you choose all teams you will see the present game in the NBA</h2>
+    <p>chose group name:</p>
+
     <div class="form">
         <form action="/" method="POST">
-            <input type="text" name="content" id="content">
+            <select name="chosen" id="teams_name">
+            </select>
+            <!-- <input type="text" name="chosen" id="content"> -->
             <input type="submit" value="send">
         </form>
-        <div id="text" hidden=true>{{text}}</div>
+        <div id="answer" hidden=true>{{answer}}</div>
+        <div id="teams_names_list" name="team_names" hidden=true>{{team_names}}</div>
         <h2 id="head"></h2>
+        <!-- <div class='parent'> -->
         <table id="teams"></table>
+            <!-- <div class='child inline-block-child'>
+                <dl>
+                    <dt>green = this group will win this game</dt>
+                    <dt>red = this group will win this game</dt>
+                    <dt>yellow = this game result is even</dt>
+                  </dl> -->
+            <!-- </div> -->
+        <!-- </div> -->
         <script>
-            text = document.getElementById("text").innerText
-            console.log(text)
-            if (text.length == 0 || text[1] != '{') {
+            const selectBox = document.querySelector('select');
+            selectBox.options.add(new Option("all teams", "", true, true))
+            team_names = document.getElementById("teams_names_list").innerText
+            console.log(team_names)
+            team_names = JSON.parse(team_names)
+            for (const team_name of team_names) {
+                selectBox.options.add(new Option(team_name, team_name, false, false));
+            }
+            console.log(selectBox.value)
+        </script>
+        <script>
+            answer = document.getElementById("answer").innerText
+            console.log(answer)
+            if (answer.length == 0 || answer[1] != '{') {
                 data = "<p class=\"error\">"
-                if (text.length != 0 && text[0] == '{') {
-                    data += text
+                if (answer.length != 0 && answer[0] == '{') {
+                    data += answer
                 }
                 else {
                     data += "this is not a good group name"
                 }
                 data += "</p>"
-                console.log(text)
+                console.log(answer)
                 document.getElementById("teams").innerHTML = data
             }
-            else {            
-                table = document.getElementById("teams")                
+            else {
+                table = document.getElementById("teams")
                 tr = document.createElement("tr");
                 table.append(tr)
                 th = document.createElement("th");
@@ -125,12 +188,13 @@
                 th = document.createElement("th");
                 tr.append(th);
                 th.append("visitor group")
-                json = JSON.parse(text)
+                json = JSON.parse(answer)
                 flag = true
-                for (var line of json){
-                    head = document.getElementById("head") 
+                for (var line of json) {
+                    console.log(line)
+                    head = document.getElementById("head")
                     if (flag) {
-                        head.append(line.head);   
+                        head.append(line.head);
                         flag = false
                     }
                     tr = document.createElement("tr");
@@ -143,11 +207,13 @@
                     tr.append(td);
                     td.append(line.home_group);
                     if (score > 50) td.className = "win"
+                    else if (score == 50) td.className = "mid"
                     else td.className = "lose"
                     td = document.createElement("td");
                     tr.append(td);
                     td.append(line.visitor_group);
                     if (score < 50) td.className = "win"
+                    else if (score == 50) td.className = "mid"
                     else td.className = "lose"
                 }
             }

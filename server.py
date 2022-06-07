@@ -1,19 +1,18 @@
-from model_api import ModelApi
-import data_base_connection
-import sys
-from typing import List
-import socket
-import threading
-from datetime import datetime
-from datetime import date
-from datetime import timedelta
 import copy
-from anylze_and_cleaning import date_to_number
+import socket
+import sys
+import threading
+from datetime import date, datetime, timedelta
+from typing import List
 import data_base_connection
-# sys.path.append('../AIball/Scrapper')
+from anylze_and_cleaning import date_to_number
+from model_api import ModelApi
+sys.path.append('../AIball/Scrapper')
+import scrapper
+
+
 # sys.path.insert(
 #     0, r'..\AIball\Scrapper')
-import scrapper
 
 
 MONTHS = [date(2021, 9, 30), date(2021, 10, 31), date(2021, 11, 30), date(2021, 12, 31), date(2022, 1, 31),
@@ -24,7 +23,7 @@ def get_last_games() -> List[List[str]]:
     game_list = list()
     for month in MONTHS:
         games = scrapper.get_games(month.year, month.strftime("%B"))
-        if date.today() < date(month.year,month.month, 1):
+        if date.today() < date(month.year, month.month, 1):
             break
         if games is None:
             continue
@@ -43,7 +42,7 @@ def get_next_games(game_list) -> List[List[str]]:
     if len(game_list) is 0:
         for month in MONTHS:
             # if date.today() >= month - timedelta(days=month.day - 1):
-                # continue
+            # continue
             games = scrapper.get_games(month.year, month.strftime("%B"))
             if games is None:
                 continue
@@ -66,47 +65,20 @@ def clean_played_game(games):
             return
 
 
-def update_balance():
+def update_balance(db_connection):
     for game in get_last_games():
         print(game["date"])
-        data_base_connection.update_balance(game)
-
-
-
-
-def check_acc():
-    api = ModelApi()
-    last_game = None
-    game_pred = list()
-    game_score = list()
-    data_base_connection.create_balance()
-    update_balance()
-    for game in get_last_games():
-        last_game = {"date": game["date"], "home_group": game["home_group"],
-         "visitor_group": game["visitor_group"]}
-        game_pred.append(api.get_game_score(last_game))
-        if game["home_pts"] > game["vis_pts"]:
-            game_score.append(100)
-        else:
-            game_score.append(0) 
-                   
-        data_base_connection.update_balance(game)
-        games = [abs(score - pred) for score,pred in zip(game_score, game_pred)]
-        print(sum(games) / len(games), game_score, game_pred)
-    
-
-
-
-        
-
-    
+        db_connection.update_balance(game)
 
 
 def server():
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     api = ModelApi()
+    db_connection = data_base_connection.db_connection()
+    # db_connection.upload_teams("tables/initial_files/teams_results.csv")
+
     try:
-        # data_base_connection.create_balance()               
+        # db_connection.create_balance()
         # update_balance()
         serverSocket.bind(('localhost', 3000))
         print("start Serv!")
@@ -121,39 +93,47 @@ def server():
             if (datetime.now().hour == 0 and not done):
                 done = True
                 # TODO update button and time
-                # data_base_connection.update_next_games()
-                # data_base_connection.create_balance()               
+                # db_connection.update_next_games()
+                # db_connection.create_balance()
                 # T_update_balance = threading.Thread(
-                    # target=update_balance, args=())
+                # target=update_balance, args=())
                 # T_next_game = threading.Thread(
-                    # target=get_next_games, args=(next_games, ))
+                # target=get_next_games, args=(next_games, ))
                 # T_update_balance.start()
                 # T_next_game.start()
             elif datetime.now().hour != 0:
                 done = False
-            massage, address = serverSocket.recvfrom(1024)
+            try:
+                massage, address = serverSocket.recvfrom(1024)
+            except ConnectionResetError:
+                continue
             print(massage)
             # T_next_game.join()
             # T_update_balance.join()
             try:
                 code, content = massage.decode().split(":")
-                if code != "200" and code != "300":
-                     raise ValueError()
+                if code != "200" and code != "300" and code != "400":
+                    raise ValueError()
             except ValueError:
                 serverSocket.sendto("{wrong massage}".encode(), address)
                 continue
             games = list()
-            if code == "200":
-                games = data_base_connection.get_next_games()
+            if code == "300":
+                games = db_connection.get_next_games(content)
+            elif code == "400":
+                team_names = list(db_connection.get_teams_name())
+                team_names = '["' + '", "'.join(team_names) + '"]'
+                serverSocket.sendto(team_names.encode(), address)
+                continue
             else:
-                games = data_base_connection.get_next_games(content)
+                games = db_connection.get_next_games()
             data = list()
             for game in games:
                 home_group = game["home_group"]
                 date = game["date"]
                 visitor_group = game["visitor_group"]
-                score = api.get_game_score(copy.deepcopy(game))
-                massage = '{' + f'"head":"{content}", "date":"{date}","home_group":"{home_group}","visitor_group":"{visitor_group}","score":"{score}"' +'}'
+                score = api.get_game_score(db_connection, copy.deepcopy(game))
+                massage = '{' + f'"head":"{content}", "date":"{date}","home_group":"{home_group}","visitor_group":"{visitor_group}","score":"{score}"' + '}'
                 data.append(massage)
             data = '[' + ",".join(data) + "]"
             serverSocket.sendto(data.encode(), address)
@@ -161,15 +141,15 @@ def server():
     except KeyboardInterrupt:
         print("\nShutting down...\n")
     # except Exception as exc:
-        # print("Error:\n")
-        # print(exc)
+    #     print("Error:\n")
+    #     print(exc)
     serverSocket.close()
 
 
+print('Access http://localhost:900')
 
 
 def main():
-    print('Access http://localhost:900')
     server()
 
 

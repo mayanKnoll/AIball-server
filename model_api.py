@@ -19,13 +19,13 @@ class ModelApi:
     """
     # TODO do all
 
-    def __init__(self) -> None:
+    def __init__(self ,year = 2021) -> None:
         # X_test[X_test.columns] = scaler.transform(X_test)
         # X = X.round(decimals=3)
         #TODO take all that info from database
         self._scaler = load('scaler.joblib')
         self._model = load('ann_model.joblib')
-        self._teams_df = self.get_teams_by_year(2021)
+        self._year = year
         self._place = {True: "home_group", False: "visitor_group"}
         self._short_place = {True:  'Hm', False: "Vis"}
 
@@ -34,14 +34,14 @@ class ModelApi:
         extend
         """
 
-    def get_game_score(self, game: Dict[str, object]) -> int:
+    def get_game_score(self, db_connection, game: Dict[str, object]) -> int:
         del game["_id"]
         date_to_season_and_days(game)
-        db.add_balance(True, game)
-        db.add_balance(False, game)
-        db.add_last_game(game)
-        self.add_team_data(True, game)
-        self.add_team_data(False, game)
+        db_connection.add_balance(True, game)
+        db_connection.add_balance(False, game)
+        db_connection.add_last_game(game)
+        self.add_team_database(db_connection,True, game)
+        self.add_team_database(db_connection,False, game)
         del game["Season"]
         del game['Hm_G']
         # del game['Vis_G']
@@ -76,17 +76,20 @@ class ModelApi:
                  fither] = team_data.loc[index, fither]
         del game[self._place[home]]
 
+
+
+    def add_team_database(self, db_connection: db.db_connection, home: bool, game: dict):
+        team_data = db_connection.get_team(self._year ,game[self._place[home]])
+        try:
+            for key,value in team_data.items():
+                game[self._short_place[home] + "_" +key] = value
+        except:
+            raise Exception("mongo problem")
+        del game[self._place[home]]
+
         """
         """
 
-    def get_teams_by_year(self, year: int):
-        self._teams_df = pd.read_csv("teams_results.csv")
-        self._teams_df.insert(
-            0, 'year',  self._teams_df["index"].map(lambda b: b[:4]))
-        self._teams_df.rename(columns={'index': 'group'}, inplace=True)
-        self._teams_df["group"] = self._teams_df["group"].map(lambda b: b[4:])
-        self._teams_df = self._teams_df[self._teams_df["year"] == str(year)]
-        return self._teams_df.drop('year', axis=1)
 
     def get_score(self, X: pd.DataFrame):
         X.to_csv('output.csv', mode='a', index=False, header=False)
