@@ -7,7 +7,7 @@ server_th = threading.Thread(target=server.main,args=() )
 server_th.start()
 app = Flask(__name__)
 PORT = 3000
-
+#check
 @app.route('/', methods=['POST', 'GET'])
 def home_page():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
