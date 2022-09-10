@@ -206,6 +206,9 @@
                     score = parseInt(line.score);
                     tr.append(td);
                     td.append(line.home_group);
+                    td = document.createElement("td");
+                    tr.append(td);
+                    td.append(line.date);
                     if (score > 50) td.className = "win"
                     else if (score == 50) td.className = "mid"
                     else td.className = "lose"

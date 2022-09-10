@@ -87,20 +87,16 @@ def server():
         year_update = False
         while(True):
             if datetime.now().month == 8 and datetime.now().day == 1 and not year_update:
+                #TODO: update year
                 year_update = True
             elif datetime.now().day != 1:
                 year_update = False
             if (datetime.now().hour == 0 and not done):
                 done = True
-                # TODO update button and time
-                # db_connection.update_next_games()
-                # db_connection.create_balance()
+                # TODO update day
                 # T_update_balance = threading.Thread(
-                # target=update_balance, args=())
-                # T_next_game = threading.Thread(
-                # target=get_next_games, args=(next_games, ))
+                # target=db_connection.new_day, args=(db_connection))
                 # T_update_balance.start()
-                # T_next_game.start()
             elif datetime.now().hour != 0:
                 done = False
             try:

@@ -163,6 +163,14 @@ class db_connection:
             else:
                 return
 
+
+    def new_day(self):
+        for game in self._next_games.find({}):
+            if game["date"] < self.date_to_start(date.today()):
+                self._played_games.insert_one(game)
+                self.update_balance(game)
+                self._next_games.delete_one(game)
+
     def upload_teams(self, path):
 
         teams_df = pd.read_csv(path)
