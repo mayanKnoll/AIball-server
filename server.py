@@ -70,6 +70,55 @@ def update_balance(db_connection):
         print(game["date"])
         db_connection.update_balance(game)
 
+def http_server(code, group_name = None):
+    api = ModelApi()
+    db_connection = data_base_connection.db_connection()
+    # db_connection.upload_teams("tables/initial_files/teams_results.csv")
+
+    try:
+        print("start Serv!")
+        if datetime.now().month == 8 and datetime.now().day == 1 and not year_update:
+            #TODO: update year
+            year_update = True
+        elif datetime.now().day != 1:
+            year_update = False
+        if (datetime.now().hour == 0 and not done):
+            done = True
+            # TODO update day
+            # T_update_balance = threading.Thread(
+            # target=db_connection.new_day, args=(db_connection))
+            # T_update_balance.start()
+        elif datetime.now().hour != 0:
+            done = False
+        print(massage)
+        # T_next_game.join()
+        # T_update_balance.join()
+        games = list()
+        if code == "300":
+            games = db_connection.get_next_games(group_name)
+        elif code == "400":
+            team_names = list(db_connection.get_teams_name())
+            team_names = '["' + '", "'.join(team_names) + '"]'
+            return team_names
+        else:
+            games = db_connection.get_next_games()
+        data = list()
+        for game in games:
+            home_group = game["home_group"]
+            date = game["date"]
+            visitor_group = game["visitor_group"]
+            score = api.get_game_score(db_connection, copy.deepcopy(game))
+            massage = '{' + f'"head":"{group_name}", "date":"{date}","home_group":"{home_group}","visitor_group":"{visitor_group}","score":"{score}"' + '}'
+            data.append(massage)
+        data = '[' + ",".join(data) + "]"
+        return data
+
+    except KeyboardInterrupt:
+        print("\nShutting down...\n")
+    # except Exception as exc:
+    #     print("Error:\n")
+    #     print(exc)
+
 
 def server():
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -146,7 +195,8 @@ print('Access http://localhost:900')
 
 
 def main():
-    server()
+    # server()
+    pass
 
 
 if __name__ == "__main__":
