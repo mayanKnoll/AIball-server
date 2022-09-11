@@ -7,18 +7,18 @@ app = Flask(__name__)
 #check
 @app.route('/', methods=['POST', 'GET'])
 def home_page():
-    flag_team = True
-    if request.method == 'POST':
+    # if request.method == 'POST':
         
-        try:
-            return server.http_server(request.form['code'],request.form['content'])
-        except Exception as e:
-            return e
-    else:
-        try:
-            return server.http_server('200')
-        except Exception as e:
-            return e 
+    #     try:
+    #         return server.http_server(request.form['code'],request.form['content'])
+    #     except Exception as e:
+    #         return e
+    # else:
+    #     try:
+    #         return server.http_server('200')
+    #     except Exception as e:
+    #         return e 
+    return "check check"
 
 # connecting to the server
 
