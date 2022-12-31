@@ -118,7 +118,7 @@ class db_connection:
 
     def add_last_game(self, game):
         try:
-            same_game = self.played_games.find({"$or":
+            same_game = self._played_games.find({"$or":
                                                 [{"home_group": game["home_group"], "visitor_group": game["visitor_group"]},
                                                  {"home_group": game["visitor_group"], "visitor_group": game["home_group"]}]})
             same_game = max(same_game, key=lambda x: x["date"])

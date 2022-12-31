@@ -90,7 +90,7 @@ def http_server(code, group_name = None):
             # T_update_balance.start()
         elif datetime.now().hour != 0:
             done = False
-        print(massage)
+        # print(massage)
         # T_next_game.join()
         # T_update_balance.join()
         games = list()
@@ -196,7 +196,8 @@ print('Access http://localhost:900')
 
 def main():
     # server()
-    pass
+    print(http_server('200'))
+    # pass
 
 
 if __name__ == "__main__":
